@@ -1,4 +1,5 @@
 const Sauce = require("../models/Sauce");
+const fs = require('fs');
 
 exports.createSauce = (req, res) => {
   const sauceObject = JSON.parse(req.body.sauce);
@@ -14,18 +15,10 @@ exports.createSauce = (req, res) => {
 };
 
 exports.modifySauce = (req, res) => {
-  const sauce = new Sauce({
-    userId: req.params.userId,
-    name: req.params.name,
-    manufacturer: req.params.manufacturer,
-    description: req.params.description,
-    mainPepper: req.params.mainPepper,
-    imageUrl:
-      "https://www.sprinklesandsprouts.com/wp-content/uploads/2019/01/5-minute-salsa-SQ.jpg",
-    heat: req.params.heat,
-    likes: req.params.likes,
-    dislikes: req.params.dislikes,
-  });
+  const sauce = req.file ? {
+    ...JSON.parse(req.body.sauce),
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+  } : {...req.body};
   Sauce.updateOne({ _id: req.params.id }, sauce)
     .then(() => res.status(200).json({ message: "Sauce modifié" }))
     .catch((error) => res.status(400).json({ error }));
@@ -44,9 +37,17 @@ exports.getOneSauce = (req, res) => {
 };
 
 exports.deleteSauce = (req, res) => {
-  Sauce.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: "Sauce supprimé" }))
-    .catch((error) => res.status(400).json({ error }));
+  Sauce.findOne({ _id: req.params._id})
+    .then(sauce => {
+      const filename = sauce.imageUrl.split('/images/')[1];
+      fs.unlink(`images/${filename}`, () => {
+        Sauce.deleteOne({ _id: req.params.id })
+        .then(() => res.status(200).json({ message: "Sauce supprimé" }))
+        .catch((error) => res.status(400).json({ error }));
+      });
+    })
+    .catch((error) => res.status(500).json({ error }));
+
 };
 
 exports.deleteAllSauces = (req, res) => {
