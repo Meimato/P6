@@ -1,13 +1,13 @@
 const express = require("express");
-const router = express.Router();
+const routerUser = express.Router();
 
 const controllerUser = require("../controllers/user");
 
-router.post('/signup', controllerUser.signup);
-router.post("/login", controllerUser.login);
+routerUser.post('/signup', controllerUser.signup);
+routerUser.post("/login", controllerUser.login);
 
 // Utility routes
-router.get("/", controllerUser.getAllUsers);
-router.delete("/:id", controllerUser.deleteUser)
+routerUser.get("/", controllerUser.getAllUsers);
+routerUser.delete("/:id", controllerUser.deleteUser)
 
-module.exports = router;
+module.exports = routerUser;

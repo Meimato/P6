@@ -1,27 +1,21 @@
 const Sauce = require("../models/Sauce");
 
 exports.createSauce = (req, res) => {
-  console.log(req.body)
+  const sauceObject = JSON.parse(req.body.sauce);
+  sauceObject.likes = 0;
+  sauceObject.dislikes = 0;
   const sauce = new Sauce({
-    userId: 'qsdd@deed.cole',
-    name: "Lava",
-    manufacturer: "Etna volcan",
-    description: "An erupting volcano in your mouth",
-    mainPepper: "Hot Chili",
-    imageUrl:
-      "https://www.sprinklesandsprouts.com/wp-content/uploads/2019/01/5-minute-salsa-SQ.jpg",
-    heat: 10,
-    likes: 8,
-    dislikes: 2,
+    sauce: sauceObject,
+    imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
   sauce.save()
-    .then(() => res.status(201).json({ message: "Sauce added!" }))
+    .then(() => res.status(201).json({ message: "Sauce ajouté!" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
 exports.modifySauce = (req, res) => {
   const sauce = new Sauce({
-    userId: req.params.id,
+    userId: req.params.userId,
     name: req.params.name,
     manufacturer: req.params.manufacturer,
     description: req.params.description,
@@ -33,7 +27,7 @@ exports.modifySauce = (req, res) => {
     dislikes: req.params.dislikes,
   });
   Sauce.updateOne({ _id: req.params.id }, sauce)
-    .then(() => res.status(200).json({ message: "Object modifié" }))
+    .then(() => res.status(200).json({ message: "Sauce modifié" }))
     .catch((error) => res.status(400).json({ error }));
 };
 
@@ -51,6 +45,12 @@ exports.getOneSauce = (req, res) => {
 
 exports.deleteSauce = (req, res) => {
   Sauce.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: "Objet supprimé" }))
+    .then(() => res.status(200).json({ message: "Sauce supprimé" }))
+    .catch((error) => res.status(400).json({ error }));
+};
+
+exports.deleteAllSauces = (req, res) => {
+  Sauce.deleteMany({ name: 'Lava' })
+    .then(() => res.status(200).json({ message: "Sauces supprimées" }))
     .catch((error) => res.status(400).json({ error }));
 };

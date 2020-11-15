@@ -4,10 +4,12 @@ const jwt = require('jsonwebtoken');
 const User = require("../models/User");
 
 exports.signup = (req, res) => {
+  console.log(req.body);
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
       const user = new User({
+        userId: req.body.email,
         email: req.body.email,
         password: hash,
       });
@@ -32,12 +34,13 @@ exports.login = (req, res) => {
             return res.status(401).json({ error: "Mot de passe incorrect !" });
           }
           res.status(200).json({
+            userId: req.body.email,
             userId: user._id,
             token: jwt.sign(
               { userId: user._id},
               'RANDOM_CODE_SECRET',
               { expiresIn: '24h' }
-            ),
+            )
           });
         })
         .catch((error) => res.status(500).json({ error }));
