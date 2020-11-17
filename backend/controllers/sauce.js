@@ -6,7 +6,7 @@ exports.createSauce = (req, res) => {
   sauceObject.likes = 0;
   sauceObject.dislikes = 0;
   const sauce = new Sauce({
-    sauce: sauceObject,
+    ...sauceObject,
     imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
   });
   sauce.save()
@@ -37,7 +37,7 @@ exports.getOneSauce = (req, res) => {
 };
 
 exports.deleteSauce = (req, res) => {
-  Sauce.findOne({ _id: req.params._id})
+  Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
       const filename = sauce.imageUrl.split('/images/')[1];
       fs.unlink(`images/${filename}`, () => {
@@ -47,11 +47,10 @@ exports.deleteSauce = (req, res) => {
       });
     })
     .catch((error) => res.status(500).json({ error }));
-
 };
 
 exports.deleteAllSauces = (req, res) => {
-  Sauce.deleteMany({ name: 'Lava' })
+  Sauce.deleteMany({ name: req.params.name })
     .then(() => res.status(200).json({ message: "Sauces supprimées" }))
     .catch((error) => res.status(400).json({ error }));
 };
