@@ -66,9 +66,3 @@ exports.setLike = (req, res) => {
     })
     .catch(error => res.status(500).json({ error }));
 };
-
-exports.deleteAllSauces = (req, res) => {
-  Sauce.deleteMany({ name: req.params.name })
-    .then(() => res.status(200).json({ message: "Sauces supprimées" }))
-    .catch((error) => res.status(400).json({ error }));
-};

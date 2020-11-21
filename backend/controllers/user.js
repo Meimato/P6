@@ -9,7 +9,6 @@ exports.signup = (req, res) => {
     .hash(req.body.password, 10)
     .then((hash) => {
       const user = new User({
-        userId: req.body.email,
         email: req.body.email,
         password: hash,
       });
@@ -34,7 +33,6 @@ exports.login = (req, res) => {
             return res.status(401).json({ error: "Mot de passe incorrect !" });
           }
           res.status(200).json({
-            userId: req.body.email,
             userId: user._id,
             token: jwt.sign(
               { userId: user._id},
@@ -46,16 +44,4 @@ exports.login = (req, res) => {
         .catch((error) => res.status(500).json({ error }));
     })
     .catch((error) => res.status(500).json({ error }));
-};
-
-exports.getAllUsers = (req, res, next) => {
-  User.find()
-    .then((user) => res.status(200).json(user))
-    .catch((error) => res.status(400).json({ error }));
-};
-
-exports.deleteUser = (req, res, next) => {
-  User.deleteOne({ _id: req.params.id })
-    .then(() => res.status(200).json({ message: "Utilisateur supprimé" }))
-    .catch((error) => res.status(400).json({ error }));
 };

@@ -13,6 +13,4 @@ routerSauce.post("/", auth, multer, controllerSauce.createSauce);
 routerSauce.delete("/:id", auth, controllerSauce.deleteSauce);
 routerSauce.post("/:id/like", auth, controllerSauce.setLike);
 
-routerSauce.delete("/", auth, controllerSauce.deleteAllSauces);
-
 module.exports = routerSauce;
