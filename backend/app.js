@@ -2,9 +2,13 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const path = require('path');
-var dotenv = require('dotenv');
+const dotenv = require('dotenv');
+const helmet = require('helmet');
 
 const app = express();
+
+app.use(helmet());
+
 dotenv.config();
 
 var url = process.env.MONGOLAB_URI;

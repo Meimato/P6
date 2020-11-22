@@ -52,12 +52,39 @@ exports.deleteSauce = (req, res) => {
 exports.setLike = (req, res) => {
   Sauce.findOne({ _id: req.params.id })
     .then(sauce => {
-      if (req.body.like == 1 && sauce.usersLiked.indexOf(req.body.userId) == -1) {
-        sauce.likes += req.body.like;
-        sauce.usersLiked.push(req.body.userId);
-      } else if (req.body.like == -1 && sauce.usersDisliked.indexOf(req.body.usersId) == -1) {
-        sauce.dislikes -= req.body.like;
-        sauce.usersDisliked.push(req.body.userId);
+      console.log(req.body);
+      const userIdInUsersLiked = sauce.usersLiked.indexOf(req.body.userId);
+      const userIdInUsersDisliked = sauce.usersDisliked.indexOf(req.body.userId);
+      if (req.body.like == 1) {
+        if (userIdInUsersLiked == -1 && userIdInUsersDisliked == -1) { 
+          console.log("Je n'avais pas de préférence, mais maintenant j'aime ça !")        
+          sauce.likes++;
+          sauce.usersLiked.push(req.body.userId);
+        } else if (userIdInUsersDisliked != -1 && userIdInUsersLiked == -1){
+          console.log("Je n'aimais pas ça, mais maintenant si ! Cette condition ne se produit JAMAIS")
+          sauce.dislikes--;
+          sauce.usersDisliked.splice(userIdInUsersDisliked, 1);
+          sauce.likes++;
+          sauce.usersLiked.push(req.body.userId);
+        } else if (userIdInUsersDisliked == -1 && userIdInUsersLiked != -1){
+          console.log("J'aime ça et j'aime toujours ça... Cette condition ne se produit JAMAIS");
+        }
+      } else if (req.body.like == -1) {
+        if (userIdInUsersLiked == -1 && userIdInUsersDisliked == -1) {
+          console.log("Je n'avais pas de préférence, j'ai essayé et ça craint !")
+          sauce.dislikes++;
+          sauce.usersDisliked.push(req.body.userId);
+        } 
+      } else if (req.body.like == 0) {
+        if (userIdInUsersLiked != -1) {
+          console.log("J'ai changé d'avis, je ne suis pas sûr de l'aimer !")
+          sauce.usersLiked.splice(userIdInUsersLiked, 1);
+          sauce.likes--;
+        } else if (userIdInUsersDisliked != -1) {
+          console.log("J'ai changé d'avis. Ce n'est pas si terrible après tout...")
+          sauce.usersDisliked.splice(userIdInUsersDisliked, 1);
+          sauce.dislikes--;
+        }
       }
       Sauce.updateOne({ _id: req.params.id }, sauce)
         .then(() => res.status(200).json({ message: "J'aime modifié"}))
