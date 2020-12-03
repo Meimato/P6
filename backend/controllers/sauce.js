@@ -57,11 +57,11 @@ exports.setLike = (req, res) => {
       const userIdInUsersDisliked = sauce.usersDisliked.indexOf(req.body.userId);
       if (req.body.like == 1) {
         if (userIdInUsersLiked == -1 && userIdInUsersDisliked == -1) { 
-          console.log("Je n'avais pas de préférence, mais maintenant j'aime ça !")        
+          console.log("Je n'avais pas de préférence, mais maintenant j'aime ça !");   
           sauce.likes++;
           sauce.usersLiked.push(req.body.userId);
         } else if (userIdInUsersDisliked != -1 && userIdInUsersLiked == -1){
-          console.log("Je n'aimais pas ça, mais maintenant si ! Cette condition ne se produit JAMAIS")
+          console.log("Je n'aimais pas ça, mais maintenant si ! Cette condition ne se produit JAMAIS");
           sauce.dislikes--;
           sauce.usersDisliked.splice(userIdInUsersDisliked, 1);
           sauce.likes++;
@@ -71,17 +71,25 @@ exports.setLike = (req, res) => {
         }
       } else if (req.body.like == -1) {
         if (userIdInUsersLiked == -1 && userIdInUsersDisliked == -1) {
-          console.log("Je n'avais pas de préférence, j'ai essayé et ça craint !")
+          console.log("Je n'avais pas de préférence, j'ai essayé et ça craint !");
           sauce.dislikes++;
           sauce.usersDisliked.push(req.body.userId);
-        } 
+        } else if (userIdInUsersDisliked != -1 && userIdInUsersLiked == -1) {
+          console.log("Je n'ai pas aimé et je n'aime toujours pas... Cette condition ne se produit JAMAIS");
+        } else if (userIdInUsersDisliked == -1 && userIdInUsersLiked != -1) {
+          console.log("Avant, je l'aimais bien, mais maintenant il me dégoûte. Cette condition ne se produit JAMAIS");
+          sauce.likes--;
+          sauce.usersLiked.splice(userIdInUsersLiked, 1);
+          sauce.dislikes++;
+          sauce.usersDisliked.push(req.body.userId);
+        }
       } else if (req.body.like == 0) {
         if (userIdInUsersLiked != -1) {
-          console.log("J'ai changé d'avis, je ne suis pas sûr de l'aimer !")
+          console.log("J'ai changé d'avis, je ne suis pas sûr de l'aimer !");
           sauce.usersLiked.splice(userIdInUsersLiked, 1);
           sauce.likes--;
         } else if (userIdInUsersDisliked != -1) {
-          console.log("J'ai changé d'avis. Ce n'est pas si terrible après tout...")
+          console.log("J'ai changé d'avis. Ce n'est pas si terrible après tout...");
           sauce.usersDisliked.splice(userIdInUsersDisliked, 1);
           sauce.dislikes--;
         }
