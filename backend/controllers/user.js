@@ -3,8 +3,15 @@ const jwt = require('jsonwebtoken');
 
 const User = require("../models/User");
 
+/**
+ * Encrypts the user's password, adds the user to the database
+ * 
+ * @param {Object} req - The request to register the user's account
+ * @param {string} req.body.email - The user's email
+ * @param {string} req.body.password - The user password
+ * 
+ */
 exports.signup = (req, res) => {
-  console.log(req.body);
   bcrypt
     .hash(req.body.password, 10)
     .then((hash) => {
@@ -19,6 +26,15 @@ exports.signup = (req, res) => {
     })
     .catch((error) => res.status(500).json({ error }));
 };
+
+/**
+ * Verifies user's credentials,
+ * returning the user's identifier from the database data and the associated authentication token 
+ *
+ * @param {Object} req - The request to login using user's credentials
+ * @param {string} req.body.email - The user's email
+ * @param {string} req.body.password - The user password
+ */
 
 exports.login = (req, res) => {
   User.findOne({ email: req.body.email })
